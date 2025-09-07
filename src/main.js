@@ -132,7 +132,7 @@ function buildKeyboard() {
       const noteElement = document.createElement("div");
       noteElement.className = "note";
       noteElement.id = noteId;
-      noteElement.style.left = `${(octave * 7 + index) * 33 + 16}px`;
+      noteElement.style.left = `${(octave * 7 + index) * 33 + 16.5}px`;
       noteElement.style.top = "122px";
       keyboardWrapper.appendChild(noteElement);
       
@@ -154,7 +154,7 @@ function buildKeyboard() {
       const noteElement = document.createElement("div");
       noteElement.className = "note";
       noteElement.id = noteId;
-      noteElement.style.left = `${left + 11}px`;
+      noteElement.style.left = `${left + 11.5}px`;
       noteElement.style.top = "62px";
       keyboardWrapper.appendChild(noteElement);
       
@@ -197,35 +197,26 @@ function paintNotes(semitones, colors) {
 
   if (!semitones.length) return;
 
-  // Calcular posiciones MIDI
-  const rootMidi = 12 * (targetOctave + 1);
-  let currentMidi = rootMidi + semitones[0];
-  const midiNotes = [currentMidi];
-  
-  for (let i = 1; i < semitones.length; i++) {
-    const interval = (semitones[i] - semitones[i - 1] + 12) % 12;
-    currentMidi += interval;
-    midiNotes.push(currentMidi);
-  }
-
-  // Mostrar notas
-  midiNotes.forEach((midi, index) => {
-    const octave = Math.floor(midi / 12) - 1;
-    if (octave < targetOctave || octave > targetOctave + 1) return;
+  // Mostrar notas en ambas octavas
+  semitones.forEach((semitone, index) => {
+    const noteName = order[semitone];
     
-    const noteId = order[midi % 12] + octave;
-    const noteElement = document.getElementById(noteId);
-    
-    if (noteElement) {
-      noteElement.style.display = "block";
-      noteElement.style.background = colors[index];
+    // Mostrar en octava 2 y 3
+    [targetOctave, targetOctave + 1].forEach(octave => {
+      const noteId = noteName + octave;
+      const noteElement = document.getElementById(noteId);
       
-      // Cambiar color de tecla negra si es necesario
-      const blackKey = document.querySelector(`.black-key[data-note="${noteId}"]`);
-      if (blackKey) {
-        blackKey.style.background = "#555";
+      if (noteElement) {
+        noteElement.style.display = "block";
+        noteElement.style.background = colors[index];
+        
+        // Cambiar color de tecla negra si es necesario
+        const blackKey = document.querySelector(`.black-key[data-note="${noteId}"]`);
+        if (blackKey) {
+          blackKey.style.background = "#555";
+        }
       }
-    }
+    });
   });
 }
 
