@@ -132,7 +132,7 @@ function buildKeyboard() {
       const noteElement = document.createElement("div");
       noteElement.className = "note";
       noteElement.id = noteId;
-      noteElement.style.left = `${(octave * 7 + index) * 33 + 7}px`;
+      noteElement.style.left = `${(octave * 7 + index) * 33 + 16}px`;
       noteElement.style.top = "122px";
       keyboardWrapper.appendChild(noteElement);
       
@@ -154,7 +154,7 @@ function buildKeyboard() {
       const noteElement = document.createElement("div");
       noteElement.className = "note";
       noteElement.id = noteId;
-      noteElement.style.left = `${left + 2}px`;
+      noteElement.style.left = `${left + 11}px`;
       noteElement.style.top = "62px";
       keyboardWrapper.appendChild(noteElement);
       
