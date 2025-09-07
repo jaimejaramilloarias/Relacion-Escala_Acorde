@@ -1,216 +1,513 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Relación Escala-Acorde / Jaime Jaramillo Arias</title>
-<!-- ===== META TAGS PARA PREVIEW SOCIAL ===== -->
-<!-- SEO básico -->
-<meta name="description" content="Explora acordes y escalas de forma visual e interactiva.">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Relación Escala-Acorde</title>
+  
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#00aaff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Escala-Acorde" />
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --surface: #1a1a1a;
+      --surface-elevated: #252525;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0a0;
+      --accent: #00aaff;
+      --accent-hover: #0099e6;
+      --white-key: #f5f5f5;
+      --black-key: #1a1a1a;
+      --success: #00c851;
+      --warning: #ff8800;
+      --error: #ff4444;
+      --info: #33b5e5;
+    }
 
-<!-- Open Graph (Facebook, WhatsApp, Slack, LinkedIn…) -->
-<meta property="og:type"        content="website">
-<meta property="og:title"       content="Relación Escala-Acorde">
-<meta property="og:description" content="Herramienta interactiva para explorar la relación escala-acorde.">
-<meta property="og:url"         content="https://jaimejaramilloarias.github.io/Relacion-Escala_Acorde/">
-<meta property="og:image"       content="https://jaimejaramilloarias.github.io/Relacion-Escala_Acorde/img/social-preview.png">
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-<!-- Twitter Card -->
-<meta name="twitter:card"        content="summary_large_image">
-<meta name="twitter:title"       content="Relación Escala-Acorde">
-<meta name="twitter:description" content="Herramienta interactiva para explorar la relación escala-acorde.">
-<meta name="twitter:image"       content="https://jaimejaramilloarias.github.io/Relacion-Escala_Acorde/img/social-preview.png">
-<!-- ===== FIN META TAGS ===== -->
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      touch-action: manipulation;
+    }
 
+    .app-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
 
-<!-- Google Font -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    .header {
+      background: var(--surface);
+      padding: 1rem;
+      text-align: center;
+      border-bottom: 1px solid var(--surface-elevated);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
 
-<style>
-/* —— ESTILO ——— */
-:root{
-  --bg:#161616;            /* fondo general */
-  --panel:#222;            /* fondo de paneles / menús */
-  --text:#e4e4e4;          /* texto principal */
-  --accent:#0af;           /* color acento para desplegables */
-  --white-key:#d4d4d4;     /* “blancas” en tema oscuro */
-  --black-key:#000;        /* negras reales */
-}
-*{box-sizing:border-box;font-family:"Poppins",sans-serif}
-body{
-  background:var(--bg);color:var(--text);text-align:center;padding:1.5rem
-}
-h1{font-size:1.8rem;font-weight:600;margin-bottom:1rem}
-select{
-  background:var(--panel);color:var(--text);border:1px solid var(--accent);
-  padding:.4rem .6rem;border-radius:6px;margin-left:.4rem
-}
-select:focus{outline:2px solid var(--accent)}
-label{font-size:.95rem;margin-right:.8rem}
+    .header h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--accent);
+    }
 
-#keyboard-wrapper{position:relative;width:max-content;margin:2rem auto}
-#white-keys{display:flex;position:relative;z-index:1}
-#black-keys{position:absolute;top:0;left:0;height:120px;z-index:2}
+    .header .subtitle {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
 
-.white-key{
-  width:40px;height:200px;background:var(--white-key);
-  border:1px solid #555;margin-left:0px
-}
-.black-key{
-  width:28px;height:120px;background:var(--black-key);
-  border-radius:0 0 4px 4px;box-shadow:0 3px 6px rgba(0,0,0,.5);
-  position:absolute
-}
-.note{
-  position:absolute;width:24px;height:24px;border-radius:50%;display:none;z-index:3;
-  box-shadow:0 0 6px rgba(255,255,255,.35)
-}
+    .controls {
+      background: var(--surface);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      border-bottom: 1px solid var(--surface-elevated);
+    }
 
-.legend-dot{width:18px;height:18px;border:1px solid #333;border-radius:50%;display:inline-block}
-.legend-row{display:flex;gap:.6em;justify-content:center;margin:.3em 0;font-size:.9rem}
-#chord-display{font-size:2.6rem;font-weight:600;margin-top:1rem;color:var(--accent)}
-</style>
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .control-label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .select-wrapper {
+      position: relative;
+    }
+
+    select {
+      width: 100%;
+      background: var(--surface-elevated);
+      color: var(--text-primary);
+      border: 2px solid transparent;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 500;
+      appearance: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0, 170, 255, 0.1);
+    }
+
+    .select-wrapper::after {
+      content: '▼';
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      pointer-events: none;
+      font-size: 0.75rem;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .keyboard-container {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: auto;
+      padding: 1rem 0;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .keyboard-wrapper {
+      position: relative;
+      width: max-content;
+      margin: 0 auto;
+      min-width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .keyboard {
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+
+    .white-keys {
+      display: flex;
+      position: relative;
+      z-index: 1;
+    }
+
+    .black-keys {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 80px;
+      z-index: 2;
+    }
+
+    .white-key {
+      width: 32px;
+      height: 140px;
+      background: var(--white-key);
+      border: 1px solid #ddd;
+      border-radius: 0 0 6px 6px;
+      margin-right: 1px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+    }
+
+    .white-key:last-child {
+      margin-right: 0;
+    }
+
+    .black-key {
+      width: 22px;
+      height: 80px;
+      background: var(--black-key);
+      border-radius: 0 0 4px 4px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+      position: absolute;
+      border: 1px solid #333;
+      transition: all 0.2s ease;
+    }
+
+    .note {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: none;
+      z-index: 3;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .chord-display {
+      background: var(--surface);
+      padding: 1.5rem;
+      border-radius: 16px;
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+      border: 1px solid var(--surface-elevated);
+    }
+
+    .chord-name {
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+      min-height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chord-info {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .legend {
+      background: var(--surface);
+      padding: 1rem;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 400px;
+      border: 1px solid var(--surface-elevated);
+    }
+
+    .legend-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+      text-align: center;
+    }
+
+    .legend-items {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 480px) {
+      .controls {
+        padding: 0.75rem;
+      }
+      
+      .main-content {
+        padding: 0.75rem;
+        gap: 1rem;
+      }
+      
+      .white-key {
+        width: 28px;
+        height: 120px;
+      }
+      
+      .black-key {
+        width: 18px;
+        height: 70px;
+      }
+      
+      .note {
+        width: 14px;
+        height: 14px;
+      }
+      
+      .chord-name {
+        font-size: 1.5rem;
+      }
+      
+      .legend-items {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .white-key {
+        width: 24px;
+        height: 100px;
+      }
+      
+      .black-key {
+        width: 16px;
+        height: 60px;
+      }
+      
+      .note {
+        width: 12px;
+        height: 12px;
+      }
+    }
+
+    /* Landscape orientation for tablets */
+    @media (orientation: landscape) and (max-height: 600px) {
+      .app-container {
+        flex-direction: row;
+      }
+      
+      .header {
+        position: static;
+        width: 300px;
+        border-right: 1px solid var(--surface-elevated);
+        border-bottom: none;
+      }
+      
+      .controls {
+        border-bottom: none;
+        border-right: 1px solid var(--surface-elevated);
+      }
+      
+      .main-content {
+        flex: 1;
+        justify-content: center;
+      }
+    }
+
+    /* Touch improvements */
+    select, .white-key, .black-key {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Loading state */
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    /* Animations */
+    @keyframes noteAppear {
+      from {
+        opacity: 0;
+        transform: scale(0.5);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .note[style*="display: block"] {
+      animation: noteAppear 0.3s ease;
+    }
+  </style>
 </head>
+
 <body>
-<h1>Relación Escala-Acorde / Jaime Jaramillo Arias</h1>
+  <div class="app-container">
+    <header class="header">
+      <h1>Relación Escala-Acorde</h1>
+      <div class="subtitle">Jaime Jaramillo Arias</div>
+    </header>
 
-<!-- MENÚS -->
-<label>Tónica:
-  <select id="tonic-select">
-    <option value="">— Elige —</option><option>C</option><option>Db</option><option>D</option><option>Eb</option>
-    <option>E</option><option>F</option><option>Gb</option><option>G</option><option>Ab</option>
-    <option>A</option><option>Bb</option><option>B</option>
-  </select>
-</label>
+    <div class="controls">
+      <div class="control-group">
+        <label class="control-label">Tónica</label>
+        <div class="select-wrapper">
+          <select id="tonic-select">
+            <option value="">Selecciona una tónica</option>
+            <option value="C">C</option>
+            <option value="Db">D♭</option>
+            <option value="D">D</option>
+            <option value="Eb">E♭</option>
+            <option value="E">E</option>
+            <option value="F">F</option>
+            <option value="Gb">G♭</option>
+            <option value="G">G</option>
+            <option value="Ab">A♭</option>
+            <option value="A">A</option>
+            <option value="Bb">B♭</option>
+            <option value="B">B</option>
+          </select>
+        </div>
+      </div>
 
-<label style="margin-left:1.2rem">Escala:
-  <select id="scale-type">
-    <option value="">— Elige —</option>
-    <!-- 38 opciones (sin cambios) -->
-    <option value="mayor">Mayor</option><option value="mayor_armonica">Mayor armónica</option>
-    <option value="menor_melodica">Menor melódica</option><option value="menor_armonica">Menor armónica</option>
-    <option value="jonico">Jónico</option><option value="dorico">Dórico</option><option value="frigio">Frigio</option>
-    <option value="lidio">Lidio</option><option value="mixolidio">Mixolidio</option><option value="eolico">Eólico</option>
-    <option value="locrio">Locrio</option><option value="jonico_b6">Jónico♭6</option>
-    <option value="locrio_s2s6">Locrio♯2♯6</option><option value="mixolidio_b2_s2_no4">Mixolidio♭2♯2 no 4</option>
-    <option value="dorico_s4_s7">Dórico♯4♯7</option><option value="mixolidio_b2">Mixolidio♭2</option>
-    <option value="lidio_s2_s5">Lidio♯2♯5</option><option value="locrio_b7">Locrio♭7</option>
-    <option value="eolico_s7">Eólico♯7</option><option value="locrio_s6">Locrio♯6</option>
-    <option value="jonico_aumentado">Jónico aumentado</option><option value="dorico_s4">Dórico♯4</option>
-    <option value="mixolidio_b2b6">Mixolidio♭2♭6</option><option value="lidio_s2">Lidio♯2</option>
-    <option value="locrio_b4b7">Locrio♭4♭7</option><option value="dorico_s7">Dórico♯7</option>
-    <option value="dorico_b2">Dórico♭2</option><option value="lidio_aumentado">Lidio aumentado</option>
-    <option value="lidio_dominante">Lidio dominante</option><option value="mixolidio_b6">Mixolidio♭6</option>
-    <option value="locrio_s2">Locrio♯2</option><option value="alterado">Alterado</option>
-    <option value="pentatonica_mayor">Pentatónica mayor</option><option value="pentatonica_dominante">Pentatónica dominante</option>
-    <option value="blues">Escala blues</option><option value="por_tonos">Por tonos (Whole-tone)</option>
-    <option value="disminuida_HW">Disminuida H-W</option><option value="disminuida_WH">Disminuida W-H</option>
-  </select>
-</label>
+      <div class="control-group">
+        <label class="control-label">Escala</label>
+        <div class="select-wrapper">
+          <select id="scale-type">
+            <option value="">Selecciona una escala</option>
+            <option value="mayor">Mayor</option>
+            <option value="mayor_armonica">Mayor armónica</option>
+            <option value="menor_melodica">Menor melódica</option>
+            <option value="menor_armonica">Menor armónica</option>
+            <option value="jonico">Jónico</option>
+            <option value="dorico">Dórico</option>
+            <option value="frigio">Frigio</option>
+            <option value="lidio">Lidio</option>
+            <option value="mixolidio">Mixolidio</option>
+            <option value="eolico">Eólico</option>
+            <option value="locrio">Locrio</option>
+            <option value="jonico_b6">Jónico♭6</option>
+            <option value="locrio_s2s6">Locrio♯2♯6</option>
+            <option value="mixolidio_b2_s2_no4">Mixolidio♭2♯2 no 4</option>
+            <option value="dorico_s4_s7">Dórico♯4♯7</option>
+            <option value="mixolidio_b2">Mixolidio♭2</option>
+            <option value="lidio_s2_s5">Lidio♯2♯5</option>
+            <option value="locrio_b7">Locrio♭7</option>
+            <option value="eolico_s7">Eólico♯7</option>
+            <option value="locrio_s6">Locrio♯6</option>
+            <option value="jonico_aumentado">Jónico aumentado</option>
+            <option value="dorico_s4">Dórico♯4</option>
+            <option value="mixolidio_b2b6">Mixolidio♭2♭6</option>
+            <option value="lidio_s2">Lidio♯2</option>
+            <option value="locrio_b4b7">Locrio♭4♭7</option>
+            <option value="dorico_s7">Dórico♯7</option>
+            <option value="dorico_b2">Dórico♭2</option>
+            <option value="lidio_aumentado">Lidio aumentado</option>
+            <option value="lidio_dominante">Lidio dominante</option>
+            <option value="mixolidio_b6">Mixolidio♭6</option>
+            <option value="locrio_s2">Locrio♯2</option>
+            <option value="alterado">Alterado</option>
+            <option value="pentatonica_mayor">Pentatónica mayor</option>
+            <option value="pentatonica_dominante">Pentatónica dominante</option>
+            <option value="blues">Escala blues</option>
+            <option value="por_tonos">Por tonos (Whole-tone)</option>
+            <option value="disminuida_HW">Disminuida H-W</option>
+            <option value="disminuida_WH">Disminuida W-H</option>
+          </select>
+        </div>
+      </div>
+    </div>
 
-<!-- TECLADO -->
-<div id="keyboard-wrapper"><div id="white-keys"></div><div id="black-keys"></div></div>
-<div id="chord-display"></div>
+    <main class="main-content">
+      <div class="keyboard-container">
+        <div class="keyboard-wrapper">
+          <div class="keyboard">
+            <div class="white-keys" id="white-keys"></div>
+            <div class="black-keys" id="black-keys"></div>
+          </div>
+        </div>
+      </div>
 
-<!-- LEYENDA -->
-<div style="margin-top:2em">
-  <div class="legend-row"><span class="legend-dot" style="background:green"></span>Fundamental</div>
-  <div class="legend-row"><span class="legend-dot" style="background:blue"></span>Estructurales</div>
-  <div class="legend-row"><span class="legend-dot" style="background:orange"></span>Tensiones disponibles</div>
-  <div class="legend-row"><span class="legend-dot" style="background:red"></span>Tensiones NO disponibles</div>
-</div>
+      <div class="chord-display">
+        <div class="chord-name" id="chord-display">Selecciona tónica y escala</div>
+        <div class="chord-info">El acorde se mostrará aquí</div>
+      </div>
 
-<script>
-/* ===========  LÓGICA (idéntica, sólo pegada) =========== */
-const order=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
-const enh={Db:"C#",Eb:"D#",Gb:"F#",Ab:"G#",Bb:"A#"};
-const sem=n=>order.indexOf(enh[n]||n);
+      <div class="legend">
+        <div class="legend-title">Leyenda</div>
+        <div class="legend-items">
+          <div class="legend-item">
+            <span class="legend-dot" style="background: var(--success);"></span>
+            <span>Fundamental</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background: var(--info);"></span>
+            <span>Estructurales</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background: var(--warning);"></span>
+            <span>Tensiones disponibles</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background: var(--error);"></span>
+            <span>Tensiones NO disponibles</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 
-const white=["C","D","E","F","G","A","B"], black=["C#","D#","F#","G#","A#"], bOff=[1,2,4,5,6];
-const startOct=2,numOct=2,targetOct=2;
-
-/* patrones completos ≈ 38 escalas */
-const scalePatterns={mayor:[2,2,1,2,2,2,1],mayor_armonica:[2,2,1,2,1,3,1],
-mennor_melodica:[2,1,2,2,2,2,1],menor_armonica:[2,1,2,2,1,3,1],jonico:[2,2,1,2,2,2,1],
-dorico:[2,1,2,2,2,1,2],frigio:[1,2,2,2,1,2,2],lidio:[2,2,2,1,2,2,1],
-mixolidio:[2,2,1,2,2,1,2],eolico:[2,1,2,2,1,2,2],locrio:[1,2,2,1,2,2,2],
-jonico_b6:[2,2,1,2,1,3,1],locrio_s2s6:[2,1,2,1,3,1,2],
-mixolidio_b2_s2_no4:[1,2,1,3,1,2,2],dorico_s4_s7:[2,1,3,1,2,2,1],
-mixolidio_b2:[1,3,1,2,2,1,2],lidio_s2_s5:[3,1,2,2,1,2,1],
-locrio_b7:[1,2,2,1,2,1,3],eolico_s7:[2,1,2,2,1,3,1],locrio_s6:[1,2,2,1,3,1,2],
-jonico_aumentado:[2,2,1,3,1,2,1],dorico_s4:[2,1,3,1,2,1,2],mixolidio_b2b6:[1,3,1,2,1,2,2],
-lidio_s2:[3,1,2,1,2,2,1],locrio_b4b7:[1,2,1,2,2,1,3],dorico_s7:[2,1,2,2,2,2,1],
-dorico_b2:[1,2,2,2,2,1,2],lidio_aumentado:[2,2,2,2,1,2,1],lidio_dominante:[2,2,2,1,2,1,2],
-mixolidio_b6:[2,2,1,2,1,2,2],locrio_s2:[2,1,2,1,2,2,2],alterado:[1,2,1,2,2,2,2],
-pentatonica_mayor:[2,2,3,2,3],pentatonica_dominante:[2,2,3,3,2],blues:[3,2,1,1,3,2],
-por_tonos:[2,2,2,2,2,2],disminuida_HW:[1,2,1,2,1,2,1,2],disminuida_WH:[2,1,2,1,2,1,2,1]};
-const special=["pentatonica_mayor","pentatonica_dominante","blues","por_tonos","disminuida_HW","disminuida_WH"];
-
-const chordLabels={ /* 38 sufijos según tu lista */
-  mayor:"maj9",mayor_armonica:"+maj9",menor_melodica:"m6(9)",menor_armonica:"m(maj9)",
-  jonico:"maj9",dorico:"m9",frigio:"m11(no9)",lidio:"maj9(#11)",mixolidio:"13",
-  eolico:"m11",locrio:"m7b5",jonico_b6:"+maj9",locrio_s2s6:"m7(b5)9",
-  mixolidio_b2_s2_no4:"7(#9)b13",dorico_s4_s7:"m(maj9)#11",mixolidio_b2:"13(b9)",
-  lidio_s2_s5:"+maj7(#9)",locrio_b7:"dim7",eolico_s7:"m(maj9)",locrio_s6:"sus4(addb9)",
-  jonico_aumentado:"+maj9",dorico_s4:"m9",mixolidio_b2b6:"7(b9)b13",lidio_s2:"maj7(#9)",
-  locrio_b4b7:"dim7",dorico_s7:"m6(9)",dorico_b2:"m11(no9)",lidio_aumentado:"maj9(b5)",
-  lidio_dominante:"9(#11)",mixolidio_b6:"9(b13)",locrio_s2:"m7(b5)9",alterado:"7alt",
-  pentatonica_mayor:"6(9)",pentatonica_dominante:"9",blues:"m7",por_tonos:"+7",
-  disminuida_HW:"13(b9)",disminuida_WH:"dim7"
-};
-
-/* construir teclado */
-const wC=document.getElementById("white-keys"),bC=document.getElementById("black-keys"),allIds=[];
-for(let o=0;o<numOct;o++){
-  white.forEach((n,i)=>{
-    const id=n+(o+startOct);
-    wC.insertAdjacentHTML("beforeend",`<div class="white-key" data-note="${id}"></div>`);
-    document.getElementById("keyboard-wrapper")
-      .insertAdjacentHTML("beforeend",`<div class="note" id="${id}" style="left:${(o*7+i)*40+8}px;top:160px"></div>`);
-    allIds.push(id);
-  });
-  black.forEach((n,i)=>{
-    const id=n+(o+startOct),left=(o*7+bOff[i])*40-14;
-    bC.insertAdjacentHTML("beforeend",`<div class="black-key" data-note="${id}" style="left:${left}px"></div>`);
-    document.getElementById("keyboard-wrapper")
-      .insertAdjacentHTML("beforeend",`<div class="note" id="${id}" style="left:${left+2}px;top:92px"></div>`);
-    allIds.push(id);
-  });
-}
-
-/* helpers */
-function buildScale(root,t){let b=sem(root),s=b,out=[b];scalePatterns[t].forEach(iv=>{s=(s+iv)%12;out.push(s)});out.push(b);return out;}
-function paint(sems,cols){
-  allIds.forEach(id=>{const n=document.getElementById(id);n.style.display="none";
-    const k=document.querySelector(`.black-key[data-note="${id}"]`);if(k)k.style.background="#000";});
-  if(!sems.length)return;
-  const rootMidi=12*(targetOct+1);let m=rootMidi+sems[0],arr=[m];
-  for(let i=1;i<sems.length;i++)m+=((sems[i]-sems[i-1]+12)%12),arr.push(m);
-  arr.forEach((m,i)=>{
-    const oct=Math.floor(m/12)-1;
-    if(oct<targetOct||oct>targetOct+1)return;
-    const id=order[m%12]+oct,el=document.getElementById(id);
-    if(el){el.style.display="block";el.style.background=cols[i];
-      const k=document.querySelector(`.black-key[data-note="${id}"]`);if(k)k.style.background="#aaa";}
-  });
-}
-function showChord(root,st){document.getElementById("chord-display").textContent=root?`${root}${chordLabels[st]||""}`:"";}
-
-/* render */
-function render(){
-  const root=document.getElementById("tonic-select").value,
-        st  =document.getElementById("scale-type").value;
-  if(!root||!st){paint([],[]);showChord("","");return;}
-  const sc=buildScale(root,st);
-  const cols=sc.map((_,i)=>
-    special.includes(st)?"blue":
-    (i===0||i===sc.length-1)?"green":
-    [2,4,6].includes(i)?"blue":
-    [1,3,5].includes(i)&&((sc[i]-sc[i-1]+12)%12===1)?"red":"orange");
-  paint(sc,cols);showChord(root,st);
-}
-["tonic-select","scale-type"].forEach(id=>document.getElementById(id).addEventListener("change",render));
-render();
-</script>
+  <script type="module" src="/src/main.js"></script>
 </body>
 </html>
